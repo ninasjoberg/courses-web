@@ -1,15 +1,33 @@
 import { useState } from "react";
+import c from "./styles.module.css";
 
 const ApplyModal = ({
   course: { institute, course, courseId },
-  handleSubmit,
   cancel,
   open,
 }) => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
 
   const disableApply = !userName || !email;
+
+  const applyCourse = async ({ courseId, userName, email }) => {
+    const res = await fetch(`http://localhost:8000/applications/${courseId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, userName }),
+    });
+
+    if (res.ok) {
+      cancel();
+    } else {
+      const message = await res.text();
+      setError(message);
+    }
+  };
 
   return (
     <dialog open={open}>
@@ -33,13 +51,14 @@ const ApplyModal = ({
           aria-label="Name"
           onChange={(e) => setUserName(e.target.value)}
         />
+        {error && <p className={c.error}>{error}</p>}
         <footer>
-          <button onClick={cancel} class="secondary">
+          <button onClick={cancel} className="secondary">
             Cancel
           </button>
           <button
             disabled={disableApply}
-            onClick={() => handleSubmit({ userName, email, courseId })}
+            onClick={() => applyCourse({ userName, email, courseId })}
           >
             Apply
           </button>

@@ -1,9 +1,15 @@
 import Link from "next/link";
+import c from "./styles.module.css";
 
 const Header = () => {
   return (
-    <header>
+    <header className={c.header}>
       <nav>
+        <ul>
+          <li>
+            <strong>Keystone 2 beta</strong>
+          </li>
+        </ul>
         <ul>
           <li>
             <Link href="/">Start</Link>

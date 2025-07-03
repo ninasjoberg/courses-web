@@ -3,16 +3,14 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import c from "../styles.module.css";
 import Header from "../components/Header";
-import ApplyModal from "../components/ApplyModal";
-import { removeEmptyObjectValues } from "../utils/handleObject";
+import CourseItem from "../components/CourseItem";
 
 export default function Home({ courses }) {
   const [filteredCourses, setFilteredCourses] = useState(courses);
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
   const [deliveryMethods, setDeliveryMethods] = useState("");
-  const [applyCourseId, setApplyCourseId] = useState(false);
-  const [paginationOffset, setPaginationOffset] = useState(0);
+  const [paginationOffset, setPaginationOffset] = useState(10);
 
   const searchParams = useSearchParams();
   const locationParam = searchParams.get("location") || "";
@@ -56,6 +54,8 @@ export default function Home({ courses }) {
   };
 
   const saveSearch = async () => {
+    const search = { location, category, deliveryMethods };
+
     fetch(`http://localhost:8000/courses/savedsearches`, {
       method: "POST",
       headers: {
@@ -72,16 +72,6 @@ export default function Home({ courses }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ courseId }),
-    });
-  };
-
-  const applyCourse = async ({ courseId, userName, email }) => {
-    fetch(`http://localhost:8000/courses/${courseId}/apply`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, userName }),
     });
   };
 
@@ -112,12 +102,12 @@ export default function Home({ courses }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>
-        <Header />
-        <main className={c.mainWrapper}>
+      <Header />
+      <main className="container">
+        <div className={c.mainWrapper}>
           <h1>Courses</h1>
           <div className={c.selectWrapper}>
-            <label for="location">
+            <label htmlFor="location">
               Choose location:
               <select
                 name="location"
@@ -125,7 +115,7 @@ export default function Home({ courses }) {
                 onChange={(e) => setLocation(e.target.value)}
                 aria-label="Select location"
               >
-                <option selected disabled value="">
+                <option disabled value="">
                   Location
                 </option>
                 {uniqueLocations.map((location, index) => {
@@ -135,7 +125,7 @@ export default function Home({ courses }) {
             </label>
           </div>
           <div className={c.selectWrapper}>
-            <label for="category">
+            <label htmlFor="category">
               Choose category:
               <select
                 name="category"
@@ -143,7 +133,7 @@ export default function Home({ courses }) {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option selected disabled value="">
+                <option disabled value="">
                   Category
                 </option>
                 {uniqueCategories.map((category, index) => {
@@ -153,7 +143,7 @@ export default function Home({ courses }) {
             </label>
           </div>
           <div className={c.selectWrapper}>
-            <label for="deliveryMethods">
+            <label htmlFor="deliveryMethods">
               Choose deliveryMethods:
               <select
                 name="deliveryMethods"
@@ -161,7 +151,7 @@ export default function Home({ courses }) {
                 value={deliveryMethods}
                 onChange={(e) => setDeliveryMethods(e.target.value)}
               >
-                <option selected disabled value="">
+                <option disabled value="">
                   DeliveryMethods
                 </option>
                 {uniqueDeliveryMethods.map((deliveryMethods, index) => {
@@ -178,42 +168,18 @@ export default function Home({ courses }) {
           </button>
           {filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
-              <div key={course.id} className={c.courseWrapper}>
-                <ApplyModal
-                  open={applyCourseId === course.courseId}
-                  course={course}
-                  handleSubmit={applyCourse}
-                  cancel={() => setApplyCourseId(null)}
-                />
-
-                <h2>{course.institute}</h2>
-                <button onClick={() => saveCourse(course.courseId)}>
-                  Save course
-                </button>
-                <button onClick={() => setApplyCourseId(course.courseId)}>
-                  Apply
-                </button>
-                <p>
-                  <strong>course:</strong> {course.course}
-                </p>
-                <p>
-                  <strong>deliveryMethod:</strong> {course.deliveryMethod}
-                </p>
-                <p>
-                  <strong>location:</strong> {course.location}
-                </p>
-                <p>
-                  <strong>language:</strong>{" "}
-                  {course.language ? course.language : "not specified"}
-                </p>
-              </div>
+              <CourseItem
+                course={course}
+                saveCourse={() => saveCourse(course.courseId)}
+                key={course.id}
+              />
             ))
           ) : (
             <p>No courses found</p>
           )}
           <button onClick={handleLoadMore}>Load More</button>
-        </main>
-      </div>
+        </div>
+      </main>
     </>
   );
 }

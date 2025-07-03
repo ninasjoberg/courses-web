@@ -1,0 +1,8 @@
+.header {
+  background-color: #0a737a;
+  padding: 20px;
+  li,
+  a {
+    color: #ffff;
+  }
+}
