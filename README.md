@@ -26,12 +26,13 @@ pico.css
 - check and fix accessability
 - refactor - split up into more components, move api integrations to seperate file etc
 - add some tests
-- cache search (not user specific)
 - add logging
 
 ## Getting started:
 
+run backend service: https://github.com/ninasjoberg/courses-be
+
+`nvm use`
+`npm i`
 `npm run dev`
 http://localhost:3000/
-
-run backendservice: https://github.com/ninasjoberg/courses-be

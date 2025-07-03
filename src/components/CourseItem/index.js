@@ -26,7 +26,7 @@ const CourseItem = ({
         cancel={() => setApplyCourseId(null)}
       />
       <h2>{institute}</h2>
-      <div className="buttons">
+      <div className={c.buttonWrapper}>
         <button onClick={saveCourse}>Save course</button>
         <button onClick={() => setApplyCourseId(courseId)}>Apply</button>
       </div>

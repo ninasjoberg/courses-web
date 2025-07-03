@@ -104,7 +104,7 @@ export default function Home({ courses }) {
       </Head>
       <Header />
       <main className="container">
-        <div className={c.mainWrapper}>
+        <div className={c.searchWrapper}>
           <h1>Courses</h1>
           <div className={c.selectWrapper}>
             <label htmlFor="location">
@@ -160,12 +160,15 @@ export default function Home({ courses }) {
               </select>
             </label>
           </div>
-          <button onClick={handleSearch} disabled={disableSearch}>
-            Search
-          </button>
-          <button onClick={saveSearch} disabled={disableSearch}>
-            Save search
-          </button>
+          <div className={c.buttonWrapper}>
+            <button onClick={handleSearch} disabled={disableSearch}>
+              Search
+            </button>
+            <button onClick={saveSearch} disabled={disableSearch}>
+              Save search
+            </button>
+          </div>
+
           {filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
               <CourseItem

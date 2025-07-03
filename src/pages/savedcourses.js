@@ -6,7 +6,7 @@ const SavedCourses = ({ savedCourses }) => {
     <>
       <Header />
       <main className="container">
-        My saved courses
+        <h1>My saved courses</h1>
         <ul>
           {savedCourses.map((course) => {
             return (
@@ -21,10 +21,6 @@ const SavedCourses = ({ savedCourses }) => {
                   <p>
                     <strong>location:</strong> {course.location}
                   </p>
-                  <p>
-                    <strong>language:</strong>{" "}
-                    {course.language ? course.language : "not specified"}
-                  </p>
                 </article>
               </li>
             );
@@ -37,7 +33,7 @@ const SavedCourses = ({ savedCourses }) => {
 
 export default SavedCourses;
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const res = await fetch("http://localhost:8000/courses/savedcourses");
   const savedCourses = await res.json();
   return { props: { savedCourses } };

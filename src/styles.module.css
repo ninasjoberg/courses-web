@@ -5,11 +5,12 @@
   max-width: 1200px;
 }
 
-.mainWrapper {
+.searchWrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
+  margin: 20px 0px;
 }
 
 .selectWrapper {
@@ -18,4 +19,16 @@
 
 .listItem {
   list-style: none;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.buttonWrapper {
+  button {
+    margin: 6px;
+  }
 }

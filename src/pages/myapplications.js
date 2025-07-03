@@ -6,7 +6,7 @@ const MyApplications = ({ applications }) => {
     <>
       <Header />
       <main className="container">
-        My saved courses
+        <h1>My applications</h1>
         <ul>
           {applications.map(
             ({ id, course, deliveryMethod, location, language }) => {
@@ -24,10 +24,6 @@ const MyApplications = ({ applications }) => {
                     <p>
                       <strong>location:</strong> {location}
                     </p>
-                    <p>
-                      <strong>language:</strong>{" "}
-                      {language ? course.language : "not specified"}
-                    </p>
                   </article>
                 </li>
               );
@@ -41,7 +37,7 @@ const MyApplications = ({ applications }) => {
 
 export default MyApplications;
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const res = await fetch("http://localhost:8000/applications");
   const applications = await res.json();
   return { props: { applications } };

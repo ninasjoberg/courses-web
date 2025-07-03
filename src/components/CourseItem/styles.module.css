@@ -11,7 +11,8 @@
   text-align: center;
 }
 
-.buttons {
-  display: flex;
-  flex-direction: row;
+.buttonWrapper {
+  button {
+    margin: 6px;
+  }
 }

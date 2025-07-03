@@ -7,7 +7,7 @@ const SavedSearches = ({ searches }) => {
     <>
       <Header />
       <main className="container">
-        My saved courses
+        <h1>My saved searches</h1>
         <ul>
           {searches.map((search, key) => {
             const { location, category, deliveryMethods } = search;
@@ -19,7 +19,7 @@ const SavedSearches = ({ searches }) => {
                   <p>
                     {location} {category} {deliveryMethods}
                   </p>
-                  <Link href={`/?${queryString}`}>Saved courses</Link>
+                  <Link href={`/?${queryString}`}>Search</Link>
                 </article>
               </li>
             );
@@ -32,7 +32,7 @@ const SavedSearches = ({ searches }) => {
 
 export default SavedSearches;
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const res = await fetch("http://localhost:8000/courses/savedsearches");
   const savedSearches = await res.json();
   const searches = savedSearches.map(({ query }) => {
