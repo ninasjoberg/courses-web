@@ -14,6 +14,9 @@ const Header = () => {
           <li>
             <Link href="/savedsearches">Saved searches</Link>
           </li>
+          <li>
+            <Link href="/myapplications">Applications</Link>
+          </li>
         </ul>
       </nav>
     </header>

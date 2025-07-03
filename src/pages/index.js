@@ -3,6 +3,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import c from "../styles.module.css";
 import Header from "../components/Header";
+import ApplyModal from "../components/ApplyModal";
 import { removeEmptyObjectValues } from "../utils/handleObject";
 
 export default function Home({ courses }) {
@@ -10,6 +11,8 @@ export default function Home({ courses }) {
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
   const [deliveryMethods, setDeliveryMethods] = useState("");
+  const [applyCourseId, setApplyCourseId] = useState(false);
+  const [paginationOffset, setPaginationOffset] = useState(0);
 
   const searchParams = useSearchParams();
   const locationParam = searchParams.get("location") || "";
@@ -40,8 +43,8 @@ export default function Home({ courses }) {
   const uniqueDeliveryMethods = [...new Set(alldeliveryMethods)];
 
   const handleSearch = async () => {
-    const selectedSearch = removeEmptyObjectValues(search);
-    const searchParams = new URLSearchParams(selectedSearch);
+    const search = { location, category, deliveryMethods };
+    const searchParams = new URLSearchParams(search);
     const queryString = searchParams.toString();
 
     const response = await fetch(
@@ -70,6 +73,35 @@ export default function Home({ courses }) {
       },
       body: JSON.stringify({ courseId }),
     });
+  };
+
+  const applyCourse = async ({ courseId, userName, email }) => {
+    fetch(`http://localhost:8000/courses/${courseId}/apply`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, userName }),
+    });
+  };
+
+  const handleLoadMore = async () => {
+    setPaginationOffset(paginationOffset + 10);
+    const search = {
+      location,
+      category,
+      deliveryMethods,
+      offset: paginationOffset,
+    };
+    const searchParams = new URLSearchParams(search);
+    const queryString = searchParams.toString();
+
+    const response = await fetch(
+      `http://localhost:8000/courses/search?${queryString}`
+    );
+    const data = await response.json();
+
+    setFilteredCourses([...filteredCourses, ...data]);
   };
 
   return (
@@ -147,9 +179,19 @@ export default function Home({ courses }) {
           {filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
               <div key={course.id} className={c.courseWrapper}>
+                <ApplyModal
+                  open={applyCourseId === course.courseId}
+                  course={course}
+                  handleSubmit={applyCourse}
+                  cancel={() => setApplyCourseId(null)}
+                />
+
                 <h2>{course.institute}</h2>
                 <button onClick={() => saveCourse(course.courseId)}>
                   Save course
+                </button>
+                <button onClick={() => setApplyCourseId(course.courseId)}>
+                  Apply
                 </button>
                 <p>
                   <strong>course:</strong> {course.course}
@@ -169,6 +211,7 @@ export default function Home({ courses }) {
           ) : (
             <p>No courses found</p>
           )}
+          <button onClick={handleLoadMore}>Load More</button>
         </main>
       </div>
     </>
