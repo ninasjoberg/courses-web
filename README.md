@@ -33,6 +33,9 @@ pico.css
 run backend service: https://github.com/ninasjoberg/courses-be
 
 `nvm use`
+
 `npm i`
+
 `npm run dev`
+
 http://localhost:3000/
