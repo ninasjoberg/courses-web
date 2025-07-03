@@ -1,11 +1,28 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import c from "../styles.module.css";
-import { removeEmptyObjectValues, isEmptyObject } from "../utils/handleObject";
+import Header from "../components/Header";
+import { removeEmptyObjectValues } from "../utils/handleObject";
 
 export default function Home({ courses }) {
   const [filteredCourses, setFilteredCourses] = useState(courses);
-  const [search, setSearch] = useState({});
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+  const [deliveryMethods, setDeliveryMethods] = useState("");
+
+  const searchParams = useSearchParams();
+  const locationParam = searchParams.get("location") || "";
+  const categoryParam = searchParams.get("category") || "";
+  const deliveryMethodsParam = searchParams.get("deliveryMethods") || "";
+
+  const disableSearch = !location && !category && !deliveryMethods;
+
+  useEffect(() => {
+    setLocation(locationParam);
+    setCategory(categoryParam);
+    setDeliveryMethods(deliveryMethodsParam);
+  }, [locationParam, categoryParam, deliveryMethodsParam]);
 
   const allLocations = courses.map((course) => {
     return course.location;
@@ -22,14 +39,6 @@ export default function Home({ courses }) {
   });
   const uniqueDeliveryMethods = [...new Set(alldeliveryMethods)];
 
-  const handleSelectInput = (e) => {
-    const { name, value } = e.target;
-    setSearch((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const handleSearch = async () => {
     const selectedSearch = removeEmptyObjectValues(search);
     const searchParams = new URLSearchParams(selectedSearch);
@@ -44,23 +53,17 @@ export default function Home({ courses }) {
   };
 
   const saveSearch = async () => {
-    const selectedSearch = removeEmptyObjectValues(search);
-    const searchParams = new URLSearchParams(selectedSearch);
-    const query = searchParams.toString();
-
-    console.log(JSON.stringify({ query }));
-
-    fetch(`http://localhost:8000/courses/savesearch`, {
+    fetch(`http://localhost:8000/courses/savedsearches`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ userSearchParams: search }),
     });
   };
 
   const saveCourse = async (courseId) => {
-    fetch(`http://localhost:8000/courses/savecourse`, {
+    fetch(`http://localhost:8000/courses/savedcourses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -78,6 +81,7 @@ export default function Home({ courses }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
+        <Header />
         <main className={c.mainWrapper}>
           <h1>Courses</h1>
           <div className={c.selectWrapper}>
@@ -85,8 +89,8 @@ export default function Home({ courses }) {
               Choose location:
               <select
                 name="location"
-                value={search.location}
-                onChange={handleSelectInput}
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 aria-label="Select location"
               >
                 <option selected disabled value="">
@@ -104,8 +108,8 @@ export default function Home({ courses }) {
               <select
                 name="category"
                 aria-label="Select category"
-                value={search.category}
-                onChange={handleSelectInput}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
               >
                 <option selected disabled value="">
                   Category
@@ -122,8 +126,8 @@ export default function Home({ courses }) {
               <select
                 name="deliveryMethods"
                 aria-label="Select deliveryMethods"
-                value={search.deliveryMethods}
-                onChange={handleSelectInput}
+                value={deliveryMethods}
+                onChange={(e) => setDeliveryMethods(e.target.value)}
               >
                 <option selected disabled value="">
                   DeliveryMethods
@@ -134,16 +138,10 @@ export default function Home({ courses }) {
               </select>
             </label>
           </div>
-          <button
-            onClick={handleSearch}
-            disabled={isEmptyObject(search) ? true : false}
-          >
+          <button onClick={handleSearch} disabled={disableSearch}>
             Search
           </button>
-          <button
-            onClick={saveSearch}
-            disabled={isEmptyObject(search) ? true : false}
-          >
+          <button onClick={saveSearch} disabled={disableSearch}>
             Save search
           </button>
           {filteredCourses.length > 0 ? (
